@@ -22,11 +22,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     #! This will be the home route which will save the user detail
-    path("api/detail/",views.Home),
+    path("detail/",views.Home),
     
     #! This route will capture the image of user for further comparision
-    path("api/image/",views.Capture_Image),
+    path("image/",views.Capture_Image),
     
     #! This route will start test
-    path("api/test/",views.Test)
+    path("test/",views.Test)
 ]

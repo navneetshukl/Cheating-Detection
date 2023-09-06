@@ -1,6 +1,6 @@
 #from django.http import JsonResponse
-import json
-from django.http import JsonResponse
+import json,utils
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render,redirect
 
 # Create your views here.
@@ -16,9 +16,20 @@ def Home(request):
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
-        print(f"Name,Email and Phone number is {name} {email} {phone}")
+        #print(f"Name,Email and Phone number is {name} {email} {phone}")
         #return JsonResponse({"message": "Successfully submitted the data"})
-        return redirect("/api/image")
+        db=utils.Connect_To_DB()
+        collection=db["users"]
+        
+        data={
+            "name":name,
+            "email":email,
+            "phone":phone
+        }
+        collection.insert_one(data)
+        response = redirect("/image/")
+        response.set_cookie("email", email, path="/")
+        return response
 
 #! Getting the image of the user
 
@@ -27,14 +38,15 @@ def Capture_Image(request):
         # Get the raw JSON data from the request body
         data = json.loads(request.body)
         image_data = data.get('image_data', None)
-
-        # Process image_data, save it, etc.
-        # Here, you can save the image using PIL or any other library
-
-        # You can send a JSON response back if needed
+        db=utils.Connect_To_DB()
+        collection=db["image"]
+        email = request.COOKIES.get('email')
+        img_data={
+            "email":email,
+            "image":image_data
+        }
+        collection.insert_one(img_data)
         response_data = {'message': 'Image received and processed.'}
-        print(response_data)
-        print(image_data)
         return JsonResponse(response_data)
 
     else:
