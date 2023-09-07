@@ -28,5 +28,7 @@ urlpatterns = [
     path("image/",views.Capture_Image),
     
     #! This route will start test
-    path("test/",views.Test)
+    path("test/",views.Test),
+    
+    path("cheat/",views.cheat)
 ]

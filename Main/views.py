@@ -2,6 +2,7 @@
 import json,utils
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render,redirect
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -56,3 +57,11 @@ def Capture_Image(request):
 
 def Test(request):
     return render(request,"test.html")
+
+
+@csrf_exempt
+def cheat(request):
+    if request.method == "POST":
+         image = request.POST.get("image")
+         print(image)
+    return HttpResponse()
