@@ -1,4 +1,5 @@
 #from django.http import JsonResponse
+import base64
 import json,utils
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render,redirect
@@ -39,6 +40,10 @@ def Capture_Image(request):
         # Get the raw JSON data from the request body
         data = json.loads(request.body)
         image_data = data.get('image_data', None)
+        _, base64_data = image_data.split(';base64,')
+        image_binary = base64.b64decode(base64_data)
+        with open('captured_image.jpg', 'wb') as f:
+            f.write(image_binary)
         db=utils.Connect_To_DB()
         collection=db["image"]
         email = request.COOKIES.get('email')
@@ -46,6 +51,7 @@ def Capture_Image(request):
             "email":email,
             "image":image_data
         }
+        print(f"Captured image is {image_data}")
         collection.insert_one(img_data)
         response_data = {'message': 'Image received and processed.'}
         return JsonResponse(response_data)
