@@ -108,13 +108,12 @@ def cheat(request):
             # Threshold for cheating detection
             threshold = 100  
 
-           
             if mse > threshold:
-                message = "Cheating detected ."
+                print("Cheating detected")
+                return render(request, "cheat.html")  
             else:
                 message = "No cheating detected ."
-                
-            print(message)
+                print(message)
 
             os.remove("exam_image.jpg")
     return HttpResponse()
