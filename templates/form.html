@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  </head>
+  <body style="background-color: #f5f5f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;">
+    <div class="container">
+      <div class="columns is-justify-content-center">
+        <div class="column is-6-tablet is-5-desktop is-4-widescreen is-3-fullh">
+          <h1 class="has-text-centered mb-5">
+           <strong>Fill in your details:</strong></h1>
+          <form method="POST" action="/detail/" class="box p-5">
+            {% csrf_token %}
+            <label class="is-block mb-4">
+              <span class="is-block mb-2">Your name</span>
+              <input
+                name="name"
+                type="text"
+                class="input"
+                placeholder="Joe Bloggs"
+              />
+            </label>
+
+            <label class="is-block mb-4">
+              <span class="is-block mb-2">Email address</span>
+              <input
+                required
+                name="email"
+                type="email"
+                class="input"
+                placeholder="joe.bloggs@example.com"
+              />
+            </label>
+
+            <label class="is-block mb-4">
+              <span class="is-block mb-2">Phone Number</span>
+              <input
+                name="phone"
+                type="tel"
+                class="input"
+                placeholder="Enter your phone number"
+              />
+            </label>
+
+            <div class="mb-4">
+              <button type="submit" class="button is-link px-4">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

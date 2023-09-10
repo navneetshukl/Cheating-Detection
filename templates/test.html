@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Webcam Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <style>
+      /* Custom styles */
+      .left-section {
+        background-color: #f0f0f0;
+        height: 100vh; /* Make it full height of the viewport */
+      }
+
+      /* Style for question boxes */
+      .question-box {
+        background-color: #ffffff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        cursor: pointer; /* Change cursor style */
+        transition: background-color 0.3s ease; /* Add a smooth transition */
+      }
+
+      /* Hover effect for question boxes */
+      .question-box:hover {
+        background-color: #f5f5f5; /* Change background color on hover */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="columns is-gapless">
+      <div class="column is-3 left-section">
+        <!-- Content for the 80% section -->
+        <div class="section">
+          <h2 class="title is-4">Questions</h2>
+          <div class="question-box">
+            <p class="mb-4">Question-1</p>
+          </div>
+          <div class="question-box">
+            <p class="mb-4">Question-2</p>
+          </div>
+          <div class="question-box">
+            <p class="mb-4">Question-3</p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-9 has-background-white">
+        <!-- Content for the 20% section -->
+        <div class="section">
+          <h2 class="title is-4"></h2>
+          <div id="webcam"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      Webcam.set({
+        width: 320,
+        height: 240,
+        dest_width: 640,
+        dest_height: 480,
+        image_format: "jpeg",
+        jpeg_quality: 90,
+      });
+      Webcam.attach("#webcam");
+
+      setInterval(function () {
+        Webcam.snap(function (data_uri) {
+          $.ajax({
+            type: "POST",
+            url: "http://localhost:8000/cheat/",
+            data: { image: data_uri },
+            success: function (response) {
+              //alert("Image saved to server!");
+            },
+            error: function (xhr, status, error) {
+              console.error(error);
+            },
+          });
+        });
+      }, 10000);
+    </script>
+  </body>
+</html>

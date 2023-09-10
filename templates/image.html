@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Capture</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">Capture Image</h1>
+            <div class="box" style="max-width: 400px; margin: auto;">
+                <div class="content">
+                    <div id="cameraContainer" class="columns is-vcentered">
+                        <div class="column">
+                            <video autoplay id="webcamVideo" class="mb-3"></video>
+                            <button id="captureButton" class="button is-primary">Capture</button>
+                        </div>
+                    </div>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        const video = document.getElementById('webcamVideo');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('captureButton');
+        
+        // Function to get CSRF token from cookies
+        function getCsrfToken() {
+            const csrfCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('csrftoken='));
+            if (csrfCookie) {
+                return csrfCookie.split('=')[1];
+            }
+            return null;
+        }
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((error) => {
+                console.error('Error accessing webcam:', error);
+            });
+
+        captureButton.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = canvas.toDataURL('image/jpeg');
+            const csrfToken = getCsrfToken();  // Get CSRF token from cookies
+
+            // Send the captured image data to the backend
+            fetch('/image/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ image_data: imageData }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Image sent to backend:', data.message);
+
+                // Perform a redirect after processing the image
+                window.location.href = '/test';
+            })
+            .catch((error) => {
+                console.error('Error sending image to backend:', error);
+            });
+        });
+    </script>
+</body>
+</html>
