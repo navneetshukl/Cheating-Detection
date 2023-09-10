@@ -2,7 +2,7 @@
 
 ![Django](https://img.shields.io/badge/Django-3.2.4-brightgreen)
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.5.3-blue)
-![scikit-image](https://img.shields.io/badge/scikit_image-0.18.2-orange)
+
 
 A Django web application for capturing and analyzing images to detect cheating during exams. This project allows users to submit their details and then capture an image, which is compared to a reference image to detect cheating using Mean Squared Error (MSE).
 
