@@ -1,4 +1,4 @@
-# from django.http import JsonResponse
+from django.http import JsonResponse
 import base64, time
 import json, utils
 import os
@@ -73,24 +73,48 @@ def cheat(request):
         email = request.COOKIES.get("email")
         db = utils.Connect_To_DB()
         collection = db["image"]
-        img = collection.find_one({"email": email})["image"]
-        _, base64_data = image.split(";base64,")
-        image_binary = base64.b64decode(base64_data)
-        with open("exam_image.jpg", "wb") as f:
-            f.write(image_binary)
+        img_data = collection.find_one({"email": email})
 
-        time.sleep(5)
+        if img_data is None:
+            # Handle the case when the reference image is missing
+            print("Reference image is missing.")
+            return JsonResponse({"message": "Reference image is missing."}, status=400)
+
         reference_image = cv2.imread("reference_image.jpg")
-        exam_image = cv2.imread("exam_image.jpg")
-        difference = cv2.subtract(reference_image, exam_image)
-        mean_absolute_difference = cv2.mean(difference)
-        threshold = 0
-        if mean_absolute_difference[0] <= threshold:
-            print("No cheating detected (images are identical).")
-        else:
-            print("Cheating detected (images are different).")
 
-        os.remove("exam_image.jpg")
+        if image:
+            _, base64_data = image.split(";base64,")
+            image_binary = base64.b64decode(base64_data)
+            with open("exam_image.jpg", "wb") as f:
+                f.write(image_binary)
 
-        # print(image)
+            exam_image = cv2.imread("exam_image.jpg")
+            
+            time.sleep(5)
+
+            if exam_image is None:
+                # Handle the case when the exam image is missing
+                print("Exam image is missing.")
+                return JsonResponse({"message": "Exam image is missing."}, status=400)
+
+            # Convert images to grayscale
+            reference_image_gray = cv2.cvtColor(reference_image, cv2.COLOR_BGR2GRAY)
+            exam_image_gray = cv2.cvtColor(exam_image, cv2.COLOR_BGR2GRAY)
+
+            # Calculate Mean Squared Error (MSE)
+            mse = ((reference_image_gray - exam_image_gray) ** 2).mean()
+            print(f"MSE: {mse}")
+
+            # Threshold for cheating detection
+            threshold = 100  
+
+           
+            if mse > threshold:
+                message = "Cheating detected ."
+            else:
+                message = "No cheating detected ."
+                
+            print(message)
+
+            os.remove("exam_image.jpg")
     return HttpResponse()
